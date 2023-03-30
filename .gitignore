@@ -5,3 +5,4 @@ __MACOSX/
 *.tgz
 target/
 caltech-101/
+dataset/
