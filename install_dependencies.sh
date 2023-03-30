@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd ~/
-
 wget https://github.com/intel/mkl-dnn/releases/download/v0.19/mklml_mac_2019.0.5.20190502.tgz
 
 gunzip -c mklml_mac_2019.0.5.20190502.tgz | tar xvf -
