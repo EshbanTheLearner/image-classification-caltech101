@@ -1,0 +1,6 @@
+__MACOSX/
+*.zip
+*.tar
+*.tar.gz
+target/
+caltech-101/
