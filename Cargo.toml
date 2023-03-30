@@ -6,5 +6,6 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tch = { path = "../tch-rs" }
+#tch = { path = "./tch-rs" }
+tch = { git = "https://github.com/LaurentMazare/tch-rs.git", rev="2ebebb808065de13495db8ff7b0ba18cb1a6fe92" }
 failure = "0.1.5"

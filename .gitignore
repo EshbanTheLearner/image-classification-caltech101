@@ -2,5 +2,6 @@ __MACOSX/
 *.zip
 *.tar
 *.tar.gz
+*.tgz
 target/
 caltech-101/
