@@ -2,6 +2,8 @@ use std::io;
 use std::fs::{ self, DirEntry, copy, create_dir_all };
 use std::path::Path;
 
+use failure;
+
 const DATASET_FOLDER: &str = "dataset";
 
 fn visit_dir(dir: &Path, train_fn: &dyn Fn(&DirEntry), test_fn: &dyn Fn(&DirEntry)) -> io::Result<()> {
@@ -45,4 +47,8 @@ fn move_file(from_path: &DirEntry, to_path: &Path) -> io::Result<()> {
     let to_filename = third_order.join(&filename);
     copy(from_path.path(), to_filename)?;
     Ok(())
+}
+
+fn main() -> failure::Fallible<()> {
+
 }
