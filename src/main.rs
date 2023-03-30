@@ -1,3 +1,5 @@
+use std::process::exit;
+use std::env::args;
 use std::io;
 use std::fs::{ self, DirEntry, copy, create_dir_all };
 use std::path::Path;
@@ -50,5 +52,36 @@ fn move_file(from_path: &DirEntry, to_path: &Path) -> io::Result<()> {
 }
 
 fn main() -> failure::Fallible<()> {
+    let args: Vec<String> = args().collect();
+    let create_directories = if args.len() < 2 {
+        None
+    } else {
+        Some(args[1].as_str())
+    };
 
+    match create_directories {
+        None => (),
+        Some("yes") => {
+            let obj_categories = Path::new("101_ObjectCategories");
+            
+            let move_to_train = |x: &DirEntry| {
+                let to_folder = Path::new("train");
+                move_file(&x, &to_folder).unwrap();
+            };
+
+            let move_to_test = |x: &DirEntry| {
+                let to_folder = Path::new("val");
+                move_file(&x, &to_folder).unwrap();
+            };
+
+            visit_dir(&obj_categories, &move_to_train, &move_to_test).unwrap();
+        },
+        Some(_) => {
+            println!("Usage: cargo run yes", );
+            exit(1);
+        },
+    }
+    println!("Files kept in the imagenet format in {}", DATASET_FOLDER);
+
+    Ok(())
 }
