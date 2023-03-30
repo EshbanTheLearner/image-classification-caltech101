@@ -44,7 +44,7 @@ fn move_file(from_path: &DirEntry, to_path: &Path) -> io::Result<()> {
         .map(|x| x[..].to_string()).collect();
     let label = full_path[1].clone();
     let third_order = second_order.join(label);
-    create_dir_all((&third_order))?;
+    create_dir_all(&third_order)?;
     let filename = from_path.file_name();
     let to_filename = third_order.join(&filename);
     copy(from_path.path(), to_filename)?;
@@ -62,7 +62,7 @@ fn main() -> failure::Fallible<()> {
     match create_directories {
         None => (),
         Some("yes") => {
-            let obj_categories = Path::new("101_ObjectCategories");
+            let obj_categories = Path::new("caltech-101/101_ObjectCategories");
             
             let move_to_train = |x: &DirEntry| {
                 let to_folder = Path::new("train");
@@ -82,6 +82,6 @@ fn main() -> failure::Fallible<()> {
         },
     }
     println!("Files kept in the imagenet format in {}", DATASET_FOLDER);
-
+    println!("moving on with training.");
     Ok(())
 }
