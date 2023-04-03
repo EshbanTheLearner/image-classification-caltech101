@@ -6,6 +6,23 @@ use std::path::Path;
 
 use failure;
 
+use tch::{
+    Device, 
+    Tensor, 
+    nn
+};
+use tch::nn::{
+    ModuleT, 
+    OptimizerConfig,
+    conv2d, 
+    linear
+};
+use tch::vision::imagenet::{
+    load_from_dir,
+    load_image_and_resize224,
+    top
+};
+
 const DATASET_FOLDER: &str = "dataset";
 
 fn visit_dir(dir: &Path, train_fn: &dyn Fn(&DirEntry), test_fn: &dyn Fn(&DirEntry)) -> io::Result<()> {
