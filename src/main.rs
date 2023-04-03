@@ -176,5 +176,25 @@ fn main() -> failure::Fallible<()> {
         println!("epoch: {:4} test acc: {:5.2}%", epoch, 100. * test_accuracy,);
     }
 
+    vs.save("model.pt")?;
+    println!("Training done!");
+
+    let weights = Path::new("model.pt");
+    let image = "image.jpg";
+
+    let image = load_image_and_resize224(image)?;
+
+    let mut vs = tch::nn::VarStore::new(tch::Device::Cpu);
+    let net: Box<dyn ModuleT> = Box::new(CnnNet::new(&vs.root()));
+    vs.load(weights)?;
+
+    let output = net
+        .forward_t(&image.unsqueeze(0), false)
+        .softmax(-1);
+
+    for (probability, class) in top(&output, 5).iter() {
+        println!("{:50} {:5.2}%", class, 100.0 * probability)
+    }
+
     Ok(())
 }
