@@ -25,6 +25,12 @@ use tch::vision::imagenet::{
 
 const DATASET_FOLDER: &str = "dataset";
 
+const LABELS: i64 = 102;
+
+const W: i64 = 224;
+const H: i64 = 224;
+const C: i64 = 3; 
+
 fn visit_dir(dir: &Path, train_fn: &dyn Fn(&DirEntry), test_fn: &dyn Fn(&DirEntry)) -> io::Result<()> {
     if dir.is_dir() {
         let mut this_label = String::from("");
@@ -74,6 +80,22 @@ struct CnnNet {
     conv2: nn::Conv2D,
     fc1: nn::Linear,
     fc2: nn::Linear
+}
+
+impl CnnNet {
+    fn new(vs: &nn::Path) -> CnnNet {
+        let conv1 = conv2d(vs, C, 32, 5, Default::default());
+        let conv2 = conv2d(vs, 32, 64, 5, Default::default());
+        let fc1 = linear(vs, 179776, 1024, Default::default());
+        let fc2 = linear(vs, 1024, LABELS, Default::default());
+
+        CnnNet { 
+            conv1, 
+            conv2,
+            fc1,
+            fc2 
+        }
+    }
 }
 
 fn main() -> failure::Fallible<()> {
