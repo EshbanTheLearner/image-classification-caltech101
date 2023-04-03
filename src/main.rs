@@ -25,6 +25,8 @@ use tch::vision::imagenet::{
 
 const DATASET_FOLDER: &str = "dataset";
 
+const BATCH_SIZE: i64 = 16;
+
 const LABELS: i64 = 102;
 
 const W: i64 = 224;
@@ -95,6 +97,21 @@ impl CnnNet {
             fc1,
             fc2 
         }
+    }
+}
+
+impl nn::ModuleT for CnnNet {
+    fn forward_t(&self, xs: &Tensor, train: bool) -> Tensor {
+        xs.view(&[-1, C, H, W])
+            .apply(&self.conv1)
+            .max_pool2d_default(2)
+            .apply(&self.conv2)
+            .max_pool2d_default(2)
+            .view(&[BATCH_SIZE, -1])
+            .apply(&self.fc1)
+            .relu()
+            .dropout_(0.5, train)
+            .apply(&self.fc2)
     }
 }
 
