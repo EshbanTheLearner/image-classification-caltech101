@@ -29,6 +29,8 @@ const BATCH_SIZE: i64 = 16;
 
 const LABELS: i64 = 102;
 
+const EPOCHS: i64 = 2;
+
 const W: i64 = 224;
 const H: i64 = 224;
 const C: i64 = 3; 
@@ -115,6 +117,16 @@ impl nn::ModuleT for CnnNet {
     }
 }
 
+fn learning_rate(epoch: i64) -> f64 {
+    if epoch < 10 {
+        0.1
+    } else if epoch < 20 {
+        0.01
+    } else {
+        1e-4
+    }
+}
+
 fn main() -> failure::Fallible<()> {
     let args: Vec<String> = args().collect();
     let create_directories = if args.len() < 2 {
@@ -147,5 +159,22 @@ fn main() -> failure::Fallible<()> {
     }
     println!("Files kept in the imagenet format in {}", DATASET_FOLDER);
     println!("moving on with training.");
+
+    let image_dataset = load_from_dir(DATASET_FOLDER).unwrap();
+    let vs = nn::VarStore::new(Device::cuda_if_available());
+    let optimizer = nn::Adam::default().build(&vs, 1e-4)?;
+    let net = CnnNet::new(&vs.root());
+    
+    for epoch in 1..EPOCHS+1 {
+        for (bimages, blabels) in image_dataset.train_iter(BATCH_SIZE).shuffle().to_device(vs.device()) {
+            let loss = net
+                .forward_t(&bimages, true)
+                .cross_entropy_for_logits(&blabels);
+            optimizer.backward_step(&loss);
+        }
+        let test_accuracy = net.batch_accuracy_for_logits(&image_dataset.test_images, &image_dataset.test_labels, vs.device(), 1024);
+        println!("epoch: {:4} test acc: {:5.2}%", epoch, 100. * test_accuracy,);
+    }
+
     Ok(())
 }
