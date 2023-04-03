@@ -68,6 +68,14 @@ fn move_file(from_path: &DirEntry, to_path: &Path) -> io::Result<()> {
     Ok(())
 }
 
+#[derive(Debug)]
+struct CnnNet {
+    conv1: nn::Conv2D,
+    conv2: nn::Conv2D,
+    fc1: nn::Linear,
+    fc2: nn::Linear
+}
+
 fn main() -> failure::Fallible<()> {
     let args: Vec<String> = args().collect();
     let create_directories = if args.len() < 2 {
